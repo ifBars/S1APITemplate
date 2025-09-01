@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace $safeprojectname$.Utils
+﻿namespace S1APITemplate.Utils
 {
     public static class Constants
     {
         /// <summary>
         /// Mod information
         /// </summary>
-        public const string MOD_NAME = "$safeprojectname$";
+        public const string MOD_NAME = "S1APITemplate";
         public const string MOD_VERSION = "1.0.0";
         public const string MOD_AUTHOR = "YourName";
         public const string MOD_DESCRIPTION = "Mod description...";
@@ -17,7 +13,7 @@ namespace $safeprojectname$.Utils
         /// <summary>
         /// MelonPreferences configuration
         /// </summary>
-        public const string PREFERENCES_CATEGORY = "$safeprojectname$";
+        public const string PREFERENCES_CATEGORY = MOD_NAME;
 
         /// <summary>
         /// Default preference values

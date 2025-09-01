@@ -1,11 +1,11 @@
 ﻿#if MONO
 using ScheduleOne;
-#else
+#elif IL2CPP
 using Il2CppScheduleOne;
 #endif
 using HarmonyLib;
 
-namespace $safeprojectname$.Integrations
+namespace S1APITemplate.Integrations
 {
     [HarmonyPatch]
     public static class HarmonyPatches

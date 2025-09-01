@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<RootNamespace>$safeprojectname$</RootNamespace>
+		<RootNamespace>S1APITemplate</RootNamespace>
 		<LangVersion>default</LangVersion>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<Configurations>Mono;Il2cpp;CrossCompat</Configurations>
@@ -15,7 +15,15 @@
 		<MelonLoaderPath>$(GamePath)\MelonLoader\net35</MelonLoaderPath>
 		<ModsPath>$(GamePath)\Mods</ModsPath>
 		<DefineConstants>MONO</DefineConstants>
-		<AssemblyName>$safeprojectname$_Mono</AssemblyName>
+		<AssemblyName>S1APITemplate_Mono</AssemblyName>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='CrossCompat'">
+	  <GamePath>D:\SteamLibrary\steamapps\common\Schedule I_alternate</GamePath>
+	  <ManagedPath>$(GamePath)\Schedule I_Data\Managed</ManagedPath>
+	  <MelonLoaderPath>$(GamePath)\MelonLoader\net35</MelonLoaderPath>
+	  <ModsPath>$(GamePath)\Mods</ModsPath>
+	  <DefineConstants>MONO</DefineConstants>
+	  <AssemblyName>S1APITemplate_Mono</AssemblyName>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Il2cpp'">
@@ -24,7 +32,7 @@
 		<MelonLoaderPath>$(GamePath)\MelonLoader\net6</MelonLoaderPath>
 		<ModsPath>$(GamePath)\Mods</ModsPath>
 		<DefineConstants>IL2CPP</DefineConstants>
-		<AssemblyName>$safeprojectname$_Il2cpp</AssemblyName>
+		<AssemblyName>S1APITemplate_Il2cpp</AssemblyName>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='CrossCompat'">
@@ -33,7 +41,7 @@
 		<MelonLoaderPath>$(GamePath)\MelonLoader\net35</MelonLoaderPath>
 		<ModsPath>$(GamePath)\Mods</ModsPath>
 		<DefineConstants>CROSS_COMPAT</DefineConstants>
-		<AssemblyName>$safeprojectname$</AssemblyName>
+		<AssemblyName>S1APITemplate</AssemblyName>
 	</PropertyGroup>
 
 	<PropertyGroup>

@@ -1,16 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.36105.23 d17.13
+VisualStudioVersion = 17.13.36105.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "S1APITemplate", "S1APITemplate.csproj", "{04FB9098-F8D3-4836-A8BB-9692AED5BE00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		CrossCompat|Any CPU = CrossCompat|Any CPU
 		Il2cpp|Any CPU = Il2cpp|Any CPU
 		Mono|Any CPU = Mono|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{04FB9098-F8D3-4836-A8BB-9692AED5BE00}.CrossCompat|Any CPU.ActiveCfg = CrossCompat|Any CPU
+		{04FB9098-F8D3-4836-A8BB-9692AED5BE00}.CrossCompat|Any CPU.Build.0 = CrossCompat|Any CPU
 		{04FB9098-F8D3-4836-A8BB-9692AED5BE00}.Il2cpp|Any CPU.ActiveCfg = Il2cpp|Any CPU
 		{04FB9098-F8D3-4836-A8BB-9692AED5BE00}.Il2cpp|Any CPU.Build.0 = Il2cpp|Any CPU
 		{04FB9098-F8D3-4836-A8BB-9692AED5BE00}.Mono|Any CPU.ActiveCfg = Mono|Any CPU

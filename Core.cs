@@ -1,12 +1,12 @@
 ﻿using MelonLoader;
 using S1API;
-using $safeprojectname$.Integrations;
-using $safeprojectname$.Utils;
+using S1APITemplate.Integrations;
+using S1APITemplate.Utils;
 
-[assembly: MelonInfo(typeof($safeprojectname$.Core), Constants.MOD_NAME, Constants.MOD_VERSION, Constants.MOD_AUTHOR)]
+[assembly: MelonInfo(typeof(S1APITemplate.Core), Constants.MOD_NAME, Constants.MOD_VERSION, Constants.MOD_AUTHOR)]
 [assembly: MelonGame(Constants.Game.GAME_STUDIO, Constants.Game.GAME_NAME)]
 
-namespace $safeprojectname$
+namespace S1APITemplate
 {
     public class Core : MelonMod
     {
