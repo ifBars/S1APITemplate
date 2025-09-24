@@ -17,14 +17,6 @@
 		<DefineConstants>MONO</DefineConstants>
 		<AssemblyName>S1APITemplate_Mono</AssemblyName>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)'=='CrossCompat'">
-	  <GamePath>D:\SteamLibrary\steamapps\common\Schedule I_alternate</GamePath>
-	  <ManagedPath>$(GamePath)\Schedule I_Data\Managed</ManagedPath>
-	  <MelonLoaderPath>$(GamePath)\MelonLoader\net35</MelonLoaderPath>
-	  <ModsPath>$(GamePath)\Mods</ModsPath>
-	  <DefineConstants>MONO</DefineConstants>
-	  <AssemblyName>S1APITemplate_Mono</AssemblyName>
-	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Il2cpp'">
 		<GamePath>D:\SteamLibrary\steamapps\common\Schedule I_public</GamePath>
@@ -200,7 +192,7 @@
 	  <Compile Include="Utils\Constants.cs" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="S1API.Forked" Version="1.7.0" />
+	  <PackageReference Include="S1API.Forked" Version="*" />
 	</ItemGroup>
 
 	<PropertyGroup>
