@@ -1,8 +1,3 @@
-﻿#if MONO
-using ScheduleOne;
-#elif IL2CPP
-using Il2CppScheduleOne;
-#endif
 using HarmonyLib;
 
 namespace S1APITemplate.Integrations
@@ -12,10 +7,7 @@ namespace S1APITemplate.Integrations
     {
         private static Core? _modInstance;
 
-        /// <summary>
-        /// Set the mod instance for patch callbacks
-        /// </summary>
-        public static void SetModInstance(Core modInstance)
+        public static void Initialize(Core modInstance)
         {
             _modInstance = modInstance;
         }

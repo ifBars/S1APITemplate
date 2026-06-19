@@ -1,206 +1,84 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>netstandard2.1</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<RootNamespace>S1APITemplate</RootNamespace>
-		<LangVersion>default</LangVersion>
-		<NeutralLanguage>en-US</NeutralLanguage>
-		<Configurations>Mono;Il2cpp;CrossCompat</Configurations>
-	</PropertyGroup>
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="local.build.props" Condition="Exists('local.build.props')" />
 
-	<!-- Define paths for different configurations -->
-	<PropertyGroup Condition="'$(Configuration)'=='Mono'">
-		<GamePath>D:\SteamLibrary\steamapps\common\Schedule I_alternate</GamePath>
-		<ManagedPath>$(GamePath)\Schedule I_Data\Managed</ManagedPath>
-		<MelonLoaderPath>$(GamePath)\MelonLoader\net35</MelonLoaderPath>
-		<ModsPath>$(GamePath)\Mods</ModsPath>
-		<DefineConstants>MONO</DefineConstants>
-		<AssemblyName>S1APITemplate_Mono</AssemblyName>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+    <TargetFramework Condition="'$(Configuration)' != 'Il2CppMelon'">netstandard2.1</TargetFramework>
+    <TargetFramework Condition="'$(Configuration)' == 'Il2CppMelon'">net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>S1APITemplate</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Configurations>CrossCompat;MonoMelon;Il2CppMelon</Configurations>
+    <Platforms>AnyCPU</Platforms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AutomateLocalDeployment Condition="'$(AutomateLocalDeployment)' == ''">false</AutomateLocalDeployment>
+  </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)'=='Il2cpp'">
-		<GamePath>D:\SteamLibrary\steamapps\common\Schedule I_public</GamePath>
-		<ManagedPath>$(GamePath)\MelonLoader\Il2CppAssemblies</ManagedPath>
-		<MelonLoaderPath>$(GamePath)\MelonLoader\net6</MelonLoaderPath>
-		<ModsPath>$(GamePath)\Mods</ModsPath>
-		<DefineConstants>IL2CPP</DefineConstants>
-		<AssemblyName>S1APITemplate_Il2cpp</AssemblyName>
-	</PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'CrossCompat'">
+    <DefineConstants>$(DefineConstants);CROSS_COMPAT;MONOMELON</DefineConstants>
+    <AssemblyName>S1APITemplate</AssemblyName>
+  </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)'=='CrossCompat'">
-		<GamePath>D:\SteamLibrary\steamapps\common\Schedule I_alternate</GamePath>
-		<ManagedPath>$(GamePath)\Schedule I_Data\Managed</ManagedPath>
-		<MelonLoaderPath>$(GamePath)\MelonLoader\net35</MelonLoaderPath>
-		<ModsPath>$(GamePath)\Mods</ModsPath>
-		<DefineConstants>CROSS_COMPAT</DefineConstants>
-		<AssemblyName>S1APITemplate</AssemblyName>
-	</PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'MonoMelon'">
+    <DefineConstants>$(DefineConstants);MONOMELON</DefineConstants>
+    <AssemblyName>S1APITemplate.MonoMelon</AssemblyName>
+  </PropertyGroup>
 
-	<PropertyGroup>
-		<UsePublicized>false</UsePublicized>
-	</PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Il2CppMelon'">
+    <DefineConstants>$(DefineConstants);IL2CPPMELON</DefineConstants>
+    <AssemblyName>S1APITemplate.Il2CppMelon</AssemblyName>
+  </PropertyGroup>
 
-	<ItemGroup Condition="'$(Configuration)' == 'Mono' and '$(UsePublicized)' == 'true'">
-		<Reference Include="Assembly-CSharp-publicized">
-			<HintPath>$(ManagedPath)\Assembly-CSharp-publicized.dll</HintPath>
-		</Reference>
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="S1API.Forked" Version="3.0.5" />
+  </ItemGroup>
 
-	<ItemGroup Condition="'$(Configuration)' == 'Mono' and '$(UsePublicized)' != 'true'">
-		<Reference Include="Assembly-CSharp">
-			<HintPath>$(ManagedPath)\Assembly-CSharp.dll</HintPath>
-		</Reference>
-	</ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'CrossCompat' or '$(Configuration)' == 'MonoMelon'">
+    <Reference Include="0Harmony">
+      <HintPath>$(MelonLoaderMonoAssembliesPath)\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="MelonLoader">
+      <HintPath>$(MelonLoaderMonoAssembliesPath)\MelonLoader.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
-	<!-- Mono references -->
-	<ItemGroup Condition="'$(Configuration)'=='Mono'">
-		<Reference Include="com.rlabrecque.steamworks.net">
-			<HintPath>$(ManagedPath)\com.rlabrecque.steamworks.net.dll</HintPath>
-		</Reference>
-		<Reference Include="FishNet.Runtime">
-			<HintPath>$(ManagedPath)\FishNet.Runtime.dll</HintPath>
-		</Reference>
-		<Reference Include="Newtonsoft.Json">
-			<HintPath>$(ManagedPath)\Newtonsoft.Json.dll</HintPath>
-		</Reference>
-		<Reference Include="Unity.TextMeshPro">
-			<HintPath>$(ManagedPath)\Unity.TextMeshPro.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.AssetBundleModule">
-			<HintPath>$(ManagedPath)\UnityEngine.AssetBundleModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.CoreModule">
-			<HintPath>$(ManagedPath)\UnityEngine.CoreModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.JSONSerializeModule">
-			<HintPath>$(ManagedPath)\UnityEngine.JSONSerializeModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.TextRenderingModule">
-			<HintPath>$(ManagedPath)\UnityEngine.TextRenderingModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.UI">
-			<HintPath>$(ManagedPath)\UnityEngine.UI.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.UIElementsModule">
-			<HintPath>$(ManagedPath)\UnityEngine.UIElementsModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.UIModule">
-			<HintPath>$(ManagedPath)\UnityEngine.UIModule.dll</HintPath>
-		</Reference>
-		<Reference Include="MelonLoader">
-			<HintPath>$(MelonLoaderPath)\MelonLoader.dll</HintPath>
-		</Reference>
-		<Reference Include="0Harmony">
-			<HintPath>$(MelonLoaderPath)\0Harmony.dll</HintPath>
-		</Reference>
-	</ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Il2CppMelon'">
+    <Reference Include="0Harmony">
+      <HintPath>$(MelonLoaderAssembliesPath)\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="MelonLoader">
+      <HintPath>$(MelonLoaderAssembliesPath)\MelonLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppInterop.Runtime">
+      <HintPath>$(MelonLoaderAssembliesPath)\Il2CppInterop.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
-	<!-- CrossCompat references (Mono without Assembly-CSharp) -->
-	<ItemGroup Condition="'$(Configuration)'=='CrossCompat'">
-		<Reference Include="com.rlabrecque.steamworks.net">
-			<HintPath>$(ManagedPath)\com.rlabrecque.steamworks.net.dll</HintPath>
-		</Reference>
-		<Reference Include="FishNet.Runtime">
-			<HintPath>$(ManagedPath)\FishNet.Runtime.dll</HintPath>
-		</Reference>
-		<Reference Include="Newtonsoft.Json">
-			<HintPath>$(ManagedPath)\Newtonsoft.Json.dll</HintPath>
-		</Reference>
-		<Reference Include="Unity.TextMeshPro">
-			<HintPath>$(ManagedPath)\Unity.TextMeshPro.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.AssetBundleModule">
-			<HintPath>$(ManagedPath)\UnityEngine.AssetBundleModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.CoreModule">
-			<HintPath>$(ManagedPath)\UnityEngine.CoreModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.JSONSerializeModule">
-			<HintPath>$(ManagedPath)\UnityEngine.JSONSerializeModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.TextRenderingModule">
-			<HintPath>$(ManagedPath)\UnityEngine.TextRenderingModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.UI">
-			<HintPath>$(ManagedPath)\UnityEngine.UI.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.UIElementsModule">
-			<HintPath>$(ManagedPath)\UnityEngine.UIElementsModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.UIModule">
-			<HintPath>$(ManagedPath)\UnityEngine.UIModule.dll</HintPath>
-		</Reference>
-		<Reference Include="MelonLoader">
-			<HintPath>$(MelonLoaderPath)\MelonLoader.dll</HintPath>
-		</Reference>
-		<Reference Include="0Harmony">
-			<HintPath>$(MelonLoaderPath)\0Harmony.dll</HintPath>
-		</Reference>
-	</ItemGroup>
+  <Target Name="ValidateMonoMelonPaths" BeforeTargets="ResolveReferences" Condition="('$(Configuration)' == 'CrossCompat' or '$(Configuration)' == 'MonoMelon') and '$(MelonLoaderMonoAssembliesPath)' == ''">
+    <Error Text="Set MelonLoaderMonoAssembliesPath in local.build.props before building $(Configuration)." />
+  </Target>
 
-	<!-- Il2cpp references -->
-	<ItemGroup Condition="'$(Configuration)'=='Il2cpp'">
-		<Reference Include="Assembly-CSharp" Condition="'$(Configuration)'=='Il2cpp'">
-			<HintPath>$(ManagedPath)\Assembly-CSharp.dll</HintPath>
-		</Reference>
-		<Reference Include="Il2Cppcom.rlabrecque.steamworks.net">
-			<HintPath>$(ManagedPath)\Il2Cppcom.rlabrecque.steamworks.net.dll</HintPath>
-		</Reference>
-		<Reference Include="Il2CppFishNet.Runtime">
-			<HintPath>$(ManagedPath)\Il2CppFishNet.Runtime.dll</HintPath>
-		</Reference>
-		<Reference Include="Il2CppNewtonsoft.Json">
-			<HintPath>$(ManagedPath)\Il2CppNewtonsoft.Json.dll</HintPath>
-		</Reference>
-		<Reference Include="Unity.TextMeshPro">
-			<HintPath>$(ManagedPath)\Unity.TextMeshPro.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.AssetBundleModule">
-			<HintPath>$(ManagedPath)\UnityEngine.AssetBundleModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.CoreModule">
-			<HintPath>$(ManagedPath)\UnityEngine.CoreModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.JSONSerializeModule">
-			<HintPath>$(ManagedPath)\UnityEngine.JSONSerializeModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.UI">
-			<HintPath>$(ManagedPath)\UnityEngine.UI.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.UIElementsModule">
-			<HintPath>$(ManagedPath)\UnityEngine.UIElementsModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.UIModule">
-			<HintPath>$(ManagedPath)\UnityEngine.UIModule.dll</HintPath>
-		</Reference>
-		<Reference Include="Il2Cppmscorlib">
-			<HintPath>$(ManagedPath)\Il2Cppmscorlib.dll</HintPath>
-		</Reference>
-		<Reference Include="MelonLoader">
-			<HintPath>$(MelonLoaderPath)\MelonLoader.dll</HintPath>
-		</Reference>
-		<Reference Include="0Harmony">
-			<HintPath>$(MelonLoaderPath)\0Harmony.dll</HintPath>
-		</Reference>
-		<Reference Include="Il2CppInterop.Runtime">
-			<HintPath>$(MelonLoaderPath)\Il2CppInterop.Runtime.dll</HintPath>
-		</Reference>
-	</ItemGroup>
-	<ItemGroup>
-	  <Compile Include="Core.cs" />
-	  <Compile Include="Integrations\HarmonyPatches.cs" />
-	  <Compile Include="Utils\Constants.cs" />
-	</ItemGroup>
-	<ItemGroup>
-	  <PackageReference Include="S1API.Forked" Version="*" />
-	</ItemGroup>
+  <Target Name="ValidateIl2CppMelonPaths" BeforeTargets="ResolveReferences" Condition="'$(Configuration)' == 'Il2CppMelon' and '$(MelonLoaderAssembliesPath)' == ''">
+    <Error Text="Set MelonLoaderAssembliesPath in local.build.props before building Il2CppMelon." />
+  </Target>
 
-	<PropertyGroup>
-		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-	</PropertyGroup>
+  <Target Name="DeployCrossCompat" AfterTargets="Build" Condition="'$(AutomateLocalDeployment)' == 'true' and '$(Configuration)' == 'CrossCompat' and '$(LocalMonoDeploymentPath)' != ''">
+    <Message Text="[CrossCompat] Copying $(TargetFileName) to $(LocalMonoDeploymentPath)\Mods" Importance="high" />
+    <MakeDir Directories="$(LocalMonoDeploymentPath)\Mods" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(LocalMonoDeploymentPath)\Mods" />
+  </Target>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="(tasklist | findstr /I &quot;Schedule.*I.exe&quot; &gt;nul &amp;&amp; taskkill /F /IM &quot;Schedule I.exe&quot; &amp;&amp; timeout /t 3 /nobreak &gt;nul) || echo Game not running&#xD;&#xA;for /L %%i in (1,1,5) do (COPY &quot;$(TargetPath)&quot; &quot;$(ModsPath)&quot; &amp;&amp; goto copied || timeout /t 1 /nobreak &gt;nul)&#xD;&#xA;:copied&#xD;&#xA;START &quot;&quot; &quot;$(GamePath)\Schedule I.exe&quot;" />
-	</Target>
+  <Target Name="DeployMonoMelon" AfterTargets="Build" Condition="'$(AutomateLocalDeployment)' == 'true' and '$(Configuration)' == 'MonoMelon' and '$(LocalMonoDeploymentPath)' != ''">
+    <Message Text="[MonoMelon] Copying $(TargetFileName) to $(LocalMonoDeploymentPath)\Mods" Importance="high" />
+    <MakeDir Directories="$(LocalMonoDeploymentPath)\Mods" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(LocalMonoDeploymentPath)\Mods" />
+  </Target>
+
+  <Target Name="DeployIl2CppMelon" AfterTargets="Build" Condition="'$(AutomateLocalDeployment)' == 'true' and '$(Configuration)' == 'Il2CppMelon' and '$(LocalIl2CppDeploymentPath)' != ''">
+    <Message Text="[Il2CppMelon] Copying $(TargetFileName) to $(LocalIl2CppDeploymentPath)\Mods" Importance="high" />
+    <MakeDir Directories="$(LocalIl2CppDeploymentPath)\Mods" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(LocalIl2CppDeploymentPath)\Mods" />
+  </Target>
 </Project>

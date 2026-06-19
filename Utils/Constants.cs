@@ -1,45 +1,29 @@
-﻿namespace S1APITemplate.Utils
+namespace S1APITemplate.Utils
 {
     public static class Constants
     {
-        /// <summary>
-        /// Mod information
-        /// </summary>
-        public const string MOD_NAME = "S1APITemplate";
-        public const string MOD_VERSION = "1.0.0";
-        public const string MOD_AUTHOR = "YourName";
-        public const string MOD_DESCRIPTION = "Mod description...";
+        public const string ModName = "S1APITemplate";
+        public const string ModVersion = "1.0.0";
+        public const string ModAuthor = "YourName";
+        public const string ModDescription = "Mod description.";
 
-        /// <summary>
-        /// MelonPreferences configuration
-        /// </summary>
-        public const string PREFERENCES_CATEGORY = MOD_NAME;
+        public const string PreferencesCategory = ModName;
 
-        /// <summary>
-        /// Default preference values
-        /// </summary>
         public static class Defaults
         {
-            public const bool BOOLEAN_DEFAULT = false;
+            public const bool BooleanDefault = false;
         }
 
-        /// <summary>
-        /// Preference value constraints
-        /// </summary>
         public static class Constraints
         {
-            public const float MIN_CONSTRAINT = 0f;
-            public const float MAX_CONSTRAINT = 100f;
+            public const float MinConstraint = 0f;
+            public const float MaxConstraint = 100f;
         }
 
-        /// <summary>
-        /// Game-related constants
-        /// </summary>
         public static class Game
         {
-            public const string GAME_STUDIO = "TVGS";
-            public const string GAME_NAME = "Schedule I";
+            public const string Studio = "TVGS";
+            public const string Name = "Schedule I";
         }
-
     }
 }

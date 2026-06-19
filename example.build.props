@@ -1,0 +1,15 @@
+<!-- Copy this file to local.build.props and adjust the paths for your machine. -->
+<Project>
+  <PropertyGroup>
+    <!-- Set to true if you want builds to copy the mod DLL into the target Mods folder. -->
+    <AutomateLocalDeployment>false</AutomateLocalDeployment>
+
+    <!-- Mono / CrossCompat paths. -->
+    <MelonLoaderMonoAssembliesPath>C:\Program Files (x86)\Steam\steamapps\common\Schedule I\MelonLoader\net35</MelonLoaderMonoAssembliesPath>
+    <LocalMonoDeploymentPath>C:\Program Files (x86)\Steam\steamapps\common\Schedule I</LocalMonoDeploymentPath>
+
+    <!-- IL2CPP paths. -->
+    <MelonLoaderAssembliesPath>C:\Program Files (x86)\Steam\steamapps\common\Schedule I\MelonLoader\net6</MelonLoaderAssembliesPath>
+    <LocalIl2CppDeploymentPath>C:\Program Files (x86)\Steam\steamapps\common\Schedule I</LocalIl2CppDeploymentPath>
+  </PropertyGroup>
+</Project>

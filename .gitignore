@@ -4,3 +4,4 @@ bin/
 obj/
 /.vs/
 .vs/
+local.build.props
