@@ -75,6 +75,7 @@ Required properties:
 - S1API is installed through NuGet for compile-time access. Players still need S1API installed in the game at runtime.
 - Prefer public S1API namespaces such as `S1API.Lifecycle`, `S1API.Items`, `S1API.Quests`, and `S1API.Entities`.
 - Avoid depending on `S1API.Internal` from mod code unless you are intentionally accepting internal API churn.
+- This template does **NOT** include references to game assemblies, it only includes MelonLoader and S1API relevant assemblies. If you need access to game assemblies, you will need to reference them accordingly. See https://github.com/k073l/S1MelonModTemplate for a more fledged out template that includes easy setup for game assembly references.
 - If you directly reference game assemblies, keep those references scoped to runtime-specific configurations and expect to maintain Mono/IL2CPP differences yourself.
 
 ## Useful Links
