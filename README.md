@@ -24,7 +24,7 @@ The script writes `local.build.props` with your local Schedule I install paths. 
 If detection picks the wrong installs, pass paths explicitly:
 
 ```powershell
-.\setup.ps1 -MonoPath "D:\SteamLibrary\steamapps\common\Schedule I_alternate" -Il2CppPath "D:\SteamLibrary\steamapps\common\Schedule I_public" -Force
+.\setup.ps1 -MonoPath "<path-to-mono-install>" -Il2CppPath "<path-to-il2cpp-install>" -Force
 ```
 
 To copy successful builds into the target `Mods` folder, generate props with deployment enabled:
@@ -70,6 +70,10 @@ If your mod needs a less common Unity, FishNet, Steamworks, or Schedule One asse
 
 ```text
 S1APITemplate/
+|-- .agents/
+|   `-- skills/
+|       |-- schedule-one-modding/
+|       `-- schedule-one-custom-npcs/
 |-- Core.cs
 |-- Integrations/
 |   `-- HarmonyPatches.cs
@@ -80,6 +84,15 @@ S1APITemplate/
 |-- S1APITemplate.csproj
 `-- S1APITemplate.sln
 ```
+
+## Included Agent Skills
+
+This template includes repo-local Codex/agent skills under `.agents/skills/`:
+
+- `schedule-one-modding`: general Schedule I modding guidance for Mono, IL2CPP, CrossCompat, Harmony, S1API, MAPI, SteamNetworkLib, local game inspection, and packaging safety.
+- `schedule-one-custom-npcs`: focused S1API custom NPC guidance for prefab configuration, appearance, schedules, dialogue, customer/dealer behavior, and save/load lifecycle.
+
+They are development guidance only. They are not compiled into the mod DLL and should not include game assemblies, generated IL2CPP wrappers, decompiled dumps, AssetRipper exports, private logs, or local machine paths.
 
 ## Where To Put Code
 
