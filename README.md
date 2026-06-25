@@ -1,17 +1,70 @@
 # S1APITemplate
 
-A starter project for Schedule I mods that use [S1API.Forked](https://www.nuget.org/packages/S1API.Forked) and MelonLoader.
+A beginner-friendly Schedule I mod template for [S1API.Forked](https://www.nuget.org/packages/S1API.Forked), MelonLoader, and Harmony.
 
-This template is aligned with S1API `3.0.5`, the latest published NuGet package at the time this template was refreshed.
+The default path is `CrossCompat`: one mod assembly that stays on S1API/MelonLoader abstractions and avoids direct `ScheduleOne` or `Il2CppScheduleOne` game types. Use `Mono` or `Il2cpp` only when your mod intentionally needs runtime-specific game assemblies.
 
-## What This Includes
+## Quick Start
 
-- A minimal `MelonMod` entry point.
-- A placeholder Harmony patch class.
-- A pinned `S1API.Forked` package reference.
-- `CrossCompat`, `MonoMelon`, and `Il2CppMelon` build configurations.
-- `example.build.props` for local MelonLoader and deployment paths.
-- Optional post-build copying into the target game's `Mods` folder.
+1. Install the template or clone/copy this folder.
+2. Run the setup script once:
+
+```powershell
+.\setup.ps1
+```
+
+3. Build the recommended starter configuration:
+
+```powershell
+dotnet build .\S1APITemplate.sln -c CrossCompat
+```
+
+The script writes `local.build.props` with your local Schedule I install paths. That file is ignored by git.
+
+If detection picks the wrong installs, pass paths explicitly:
+
+```powershell
+.\setup.ps1 -MonoPath "D:\SteamLibrary\steamapps\common\Schedule I_alternate" -Il2CppPath "D:\SteamLibrary\steamapps\common\Schedule I_public" -Force
+```
+
+To copy successful builds into the target `Mods` folder, generate props with deployment enabled:
+
+```powershell
+.\setup.ps1 -EnableDeployment -Force
+```
+
+## Build Configurations
+
+`CrossCompat` is the recommended default for S1API mods.
+
+```powershell
+dotnet build .\S1APITemplate.sln -c CrossCompat
+```
+
+`Mono` targets the Mono/alternate branch and includes direct Mono game assembly references.
+
+```powershell
+dotnet build .\S1APITemplate.sln -c Mono
+```
+
+`Il2cpp` targets the IL2CPP/default branch and includes generated Il2Cpp assembly references.
+
+```powershell
+dotnet build .\S1APITemplate.sln -c Il2cpp
+```
+
+Players still need MelonLoader and S1API installed in the game at runtime.
+
+## Included References
+
+The project includes the common references that S1API mods usually need so new modders do not have to add Unity assemblies manually:
+
+- `S1API.Forked`, `LavaGang.MelonLoader`, and `HarmonyX` from NuGet for compile-time access.
+- `Newtonsoft.Json`, TextMeshPro, and common `UnityEngine.*` modules from the selected game install when `local.build.props` is configured.
+- `Assembly-CSharp` and `Assembly-CSharp-firstpass` for `Mono` and `Il2cpp` only.
+- `Il2CppInterop.Runtime` for `Il2cpp`.
+
+If your mod needs a less common Unity, FishNet, Steamworks, or Schedule One assembly, add it near the matching reference group in `S1APITemplate.csproj`.
 
 ## Project Layout
 
@@ -23,60 +76,17 @@ S1APITemplate/
 |-- Utils/
 |   `-- Constants.cs
 |-- example.build.props
+|-- setup.ps1
 |-- S1APITemplate.csproj
 `-- S1APITemplate.sln
 ```
 
-## Setup
+## Where To Put Code
 
-1. Copy `example.build.props` to `local.build.props`.
-2. Update the paths in `local.build.props` for your Schedule I install.
-3. Keep `AutomateLocalDeployment` as `false` until you want builds to copy the DLL into `Mods`.
-4. Restore packages:
-
-```powershell
-dotnet restore .\S1APITemplate.sln -p:Configuration=CrossCompat
-```
-
-## Build Configurations
-
-`CrossCompat` is the recommended starting point. It builds one `netstandard2.1` mod assembly and expects your mod code to stay on S1API and MelonLoader abstractions instead of direct `ScheduleOne` or `Il2CppScheduleOne` game assembly types.
-
-```powershell
-dotnet build .\S1APITemplate.sln -c CrossCompat
-```
-
-`MonoMelon` is for mods that intentionally target the Mono MelonLoader runtime.
-
-```powershell
-dotnet build .\S1APITemplate.sln -c MonoMelon
-```
-
-`Il2CppMelon` is for mods that intentionally target the IL2CPP MelonLoader runtime.
-
-```powershell
-dotnet restore .\S1APITemplate.sln -p:Configuration=Il2CppMelon
-dotnet build .\S1APITemplate.sln -c Il2CppMelon
-```
-
-## Local Paths
-
-The project imports `local.build.props` when it exists. This keeps machine-specific install paths out of git.
-
-Required properties:
-
-- `MelonLoaderMonoAssembliesPath`: usually `...\Schedule I\MelonLoader\net35`.
-- `MelonLoaderAssembliesPath`: usually `...\Schedule I\MelonLoader\net6`.
-- `LocalMonoDeploymentPath`: the Mono game install root.
-- `LocalIl2CppDeploymentPath`: the IL2CPP game install root.
-
-## Development Notes
-
-- S1API is installed through NuGet for compile-time access. Players still need S1API installed in the game at runtime.
-- Prefer public S1API namespaces such as `S1API.Lifecycle`, `S1API.Items`, `S1API.Quests`, and `S1API.Entities`.
-- Avoid depending on `S1API.Internal` from mod code unless you are intentionally accepting internal API churn.
-- This template does **NOT** include references to game assemblies, it only includes MelonLoader and S1API relevant assemblies. If you need access to game assemblies, you will need to reference them accordingly. See https://github.com/k073l/S1MelonModTemplate for a more fledged out template that includes easy setup for game assembly references.
-- If you directly reference game assemblies, keep those references scoped to runtime-specific configurations and expect to maintain Mono/IL2CPP differences yourself.
+- Register S1API items, NPCs, quests, saveables, and shop data from `GameLifecycle.OnPreLoad`.
+- Put Harmony patch classes under `Integrations/`.
+- Put IDs, version strings, config names, and log tags in `Utils/Constants.cs`.
+- Keep CrossCompat code on S1API wrappers and public abstractions. If a file needs direct game types, guard it with `#if MONO` / `#if IL2CPP` or keep it out of `CrossCompat`.
 
 ## Useful Links
 

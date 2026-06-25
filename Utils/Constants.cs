@@ -11,7 +11,7 @@ namespace S1APITemplate.Utils
 
         public static class Defaults
         {
-            public const bool BooleanDefault = false;
+            public const bool DebugLogsEnabled = false;
         }
 
         public static class Constraints

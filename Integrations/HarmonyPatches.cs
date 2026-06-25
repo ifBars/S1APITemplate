@@ -10,6 +10,7 @@ namespace S1APITemplate.Integrations
         public static void Initialize(Core modInstance)
         {
             _modInstance = modInstance;
+            modInstance.HarmonyInstance.PatchAll(typeof(HarmonyPatches).Assembly);
         }
     }
 }

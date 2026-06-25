@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Schedule One",
+  "classifications": [
+    "Mod",
+    "Unity",
+    "MelonLoader"
+  ],
+  "identity": "ScheduleOne.S1APITemplate",
+  "name": "S1API Mod Template",
+  "shortName": "s1api",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "S1APITemplate",
+  "preferNameDirectory": true,
+  "symbols": {
+    "safeprojectname": {
+      "type": "generated",
+      "generator": "safe_name",
+      "parameters": {
+        "source": "name"
+      },
+      "replaces": "$safeprojectname$",
+      "description": "Root namespace and assembly name."
+    }
+  },
+  "sources": [
+    {
+      "exclude": [
+        "**/[Bb]in/**",
+        "**/[Oo]bj/**",
+        ".vs/**",
+        "local.build.props",
+        "**/*.user",
+        "**/*.suo"
+      ]
+    }
+  ]
+}

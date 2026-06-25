@@ -1,15 +1,23 @@
-<!-- Copy this file to local.build.props and adjust the paths for your machine. -->
+<!-- Copy this file to local.build.props, or run .\setup.ps1 to generate it. -->
 <Project>
   <PropertyGroup>
     <!-- Set to true if you want builds to copy the mod DLL into the target Mods folder. -->
     <AutomateLocalDeployment>false</AutomateLocalDeployment>
 
-    <!-- Mono / CrossCompat paths. -->
-    <MelonLoaderMonoAssembliesPath>C:\Program Files (x86)\Steam\steamapps\common\Schedule I\MelonLoader\net35</MelonLoaderMonoAssembliesPath>
+    <!-- Mono / CrossCompat install root. Usually the alternate or alternate-beta Steam branch. -->
     <LocalMonoDeploymentPath>C:\Program Files (x86)\Steam\steamapps\common\Schedule I</LocalMonoDeploymentPath>
 
-    <!-- IL2CPP paths. -->
-    <MelonLoaderAssembliesPath>C:\Program Files (x86)\Steam\steamapps\common\Schedule I\MelonLoader\net6</MelonLoaderAssembliesPath>
+    <!-- IL2CPP install root. Usually the none or beta Steam branch. -->
     <LocalIl2CppDeploymentPath>C:\Program Files (x86)\Steam\steamapps\common\Schedule I</LocalIl2CppDeploymentPath>
+
+    <!-- Derived paths. Override only if your install has a non-standard layout. -->
+    <MonoAssembliesPath>$(LocalMonoDeploymentPath)\Schedule I_Data\Managed</MonoAssembliesPath>
+    <Il2CppAssembliesPath>$(LocalIl2CppDeploymentPath)\MelonLoader\Il2CppAssemblies</Il2CppAssembliesPath>
+    <MelonLoaderMonoAssembliesPath>$(LocalMonoDeploymentPath)\MelonLoader\net35</MelonLoaderMonoAssembliesPath>
+    <MelonLoaderAssembliesPath>$(LocalIl2CppDeploymentPath)\MelonLoader\net6</MelonLoaderAssembliesPath>
+
+    <!-- Use this only when developing against a local S1API build instead of the NuGet package. -->
+    <UseLocalS1APIForked>false</UseLocalS1APIForked>
+    <LocalS1APIForkedPath>..\S1API\S1API\bin\CrossCompat\netstandard2.1\S1API.dll</LocalS1APIForkedPath>
   </PropertyGroup>
 </Project>
