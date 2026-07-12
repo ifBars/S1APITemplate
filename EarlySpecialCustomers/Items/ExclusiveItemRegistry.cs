@@ -70,7 +70,6 @@ public static class ExclusiveItemRegistry
                 .WithColorable(false)
                 .WithDefaultColor(color)
                 .WithPricing(price, 0.5f)
-                .WithKeywords("special", "visitor", "exclusive", "cap")
                 .Build();
         }
         catch (Exception ex)

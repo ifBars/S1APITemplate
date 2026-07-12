@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using MelonLoader;
 using RovingSpecialCustomers.Items;
 using RovingSpecialCustomers.Models;
@@ -118,7 +119,7 @@ public static class RovingVisitCoordinator
         }
 
         var candidates = ProductManager.ListedProducts
-            .Where(product => definition.AcceptedDrugTypes.Contains(product.DrugType.ToString(), StringComparer.OrdinalIgnoreCase))
+            .Where(product => definition.AcceptedDrugTypes.Contains(GetDrugTypeName(product), StringComparer.OrdinalIgnoreCase))
             .ToArray();
 
         if (candidates.Length == 0)
@@ -324,6 +325,19 @@ public static class RovingVisitCoordinator
         state.ResetCurrentVisit();
         _dispatcher?.SaveState();
         _lastOfferRetryHour = -1;
+    }
+
+    private static string GetDrugTypeName(ProductDefinition product)
+    {
+        try
+        {
+            var property = typeof(ProductDefinition).GetProperty("DrugType", BindingFlags.Instance | BindingFlags.Public);
+            return property?.GetValue(product)?.ToString() ?? string.Empty;
+        }
+        catch
+        {
+            return string.Empty;
+        }
     }
 
     private static float GetEffectMatch(ProductDefinition product, IReadOnlyCollection<string> preferredEffectIds)
