@@ -67,7 +67,7 @@ public static class ExclusiveItemRegistry
                 return;
             }
 
-            builder.WithBasicInfo(id, name, description)
+            builder.WithBasicInfo(id, name, description, ItemCategory.Clothing)
                 .WithClothingAsset(BaseAccessoryPath)
                 .WithColorable(false)
                 .WithDefaultColor(color)
