@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using RovingSpecialCustomers.Services;
+using S1API.Entities;
 
 namespace RovingSpecialCustomers.NPCs;
 
@@ -34,7 +35,8 @@ public abstract class RovingCrewLeader : RovingCrewMember
         base.OnDestroyed();
     }
 
-    public static RovingCrewLeader? Get(string crewId) => Leaders.TryGetValue(crewId, out var leader) ? leader : null;
+    public static RovingCrewLeader? Find(string crewId) =>
+        Leaders.TryGetValue(crewId, out var leader) ? leader : null;
 
     private void WireCustomerEvents()
     {
@@ -62,16 +64,19 @@ public abstract class RovingCrewLeader : RovingCrewMember
             SendTextMessage(RovingVisitCoordinator.GetActiveVisitSummary());
             Dialogue.StopOverride();
         });
+
         Dialogue.OnChoiceSelected("RSC_OFFER", () =>
         {
             RovingVisitCoordinator.TryOfferActiveContract(notifyOnFailure: true);
             Dialogue.StopOverride();
         });
+
         Dialogue.OnChoiceSelected("RSC_BUY", () =>
         {
             RovingVisitCoordinator.TryPurchaseExclusive(CrewId);
             Dialogue.StopOverride();
         });
+
         Dialogue.OnChoiceSelected("RSC_LEAVE", Dialogue.StopOverride);
         Dialogue.UseContainerOnInteract(DialogueContainerId);
     }

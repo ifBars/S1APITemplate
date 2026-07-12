@@ -17,7 +17,7 @@ public sealed class SpecialCustomerDispatcher : NPC
 
     protected override void ConfigurePrefab(NPCPrefabBuilder builder)
     {
-        builder.WithIdentity("rsc_dispatcher", "Travel", "Wire").WithIcon(null);
+        builder.WithIdentity("rsc_dispatcher", "Travel", "Wire");
     }
 
     protected override void OnCreated()

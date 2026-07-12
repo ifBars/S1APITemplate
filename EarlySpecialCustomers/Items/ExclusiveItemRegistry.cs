@@ -2,6 +2,8 @@ using System;
 using MelonLoader;
 using S1API.Console;
 using S1API.Items;
+using ClothingColor = S1API.Items.Clothing.ClothingColor;
+using ClothingItemCreator = S1API.Items.Clothing.ClothingItemCreator;
 using S1API.Money;
 using RovingSpecialCustomers.Models;
 
@@ -29,7 +31,7 @@ public static class ExclusiveItemRegistry
 
     public static bool TryPurchase(CrewDefinition definition, out string message)
     {
-        var item = ItemManager.GetItemDefinition(definition.ExclusiveItemId);
+        var item = ItemManager.GetDefinition(definition.ExclusiveItemId);
         if (item is null)
         {
             message = $"The exclusive item '{definition.ExclusiveItemName}' is unavailable.";
@@ -53,7 +55,7 @@ public static class ExclusiveItemRegistry
     {
         try
         {
-            if (ItemManager.GetItemDefinition(id) is not null)
+            if (ItemManager.GetDefinition(id) is not null)
             {
                 return;
             }

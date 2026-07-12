@@ -16,12 +16,14 @@ public static class RovingVisitCoordinator
     private static SpecialCustomerDispatcher? _dispatcher;
     private static float _tickAccumulator;
     private static int _lastOfferRetryHour = -1;
+    private static int _restoredVisitSequence = -1;
 
     public static void Bind(SpecialCustomerDispatcher dispatcher)
     {
         _dispatcher = dispatcher;
         _tickAccumulator = 0f;
         _lastOfferRetryHour = -1;
+        _restoredVisitSequence = -1;
     }
 
     public static void Unbind(SpecialCustomerDispatcher dispatcher)
@@ -112,7 +114,7 @@ public static class RovingVisitCoordinator
 
         var state = _dispatcher.State;
         var definition = CrewDefinitions.Get(state.CrewId);
-        var leader = RovingCrewLeader.Get(state.CrewId);
+        var leader = RovingCrewLeader.Find(state.CrewId);
         if (!state.Active || state.DealOffered || definition is null || leader is null)
         {
             return false;
@@ -126,13 +128,18 @@ public static class RovingVisitCoordinator
         {
             if (notifyOnFailure)
             {
-                _dispatcher.SendSystemMessage($"{definition.DisplayName} is ready to buy, but you do not currently have a listed {definition.AcceptedDrugLabel} product.");
+                _dispatcher.SendSystemMessage(
+                    $"{definition.DisplayName} is ready to buy, but you do not currently have a listed {definition.AcceptedDrugLabel} product.");
             }
             return false;
         }
 
         var selected = candidates
-            .Select(product => new { Product = product, Match = GetEffectMatch(product, state.PreferredEffectIds) })
+            .Select(product => new
+            {
+                Product = product,
+                Match = GetEffectMatch(product, state.PreferredEffectIds)
+            })
             .OrderByDescending(entry => entry.Match)
             .ThenByDescending(entry => entry.Product.MarketValue)
             .First();
@@ -176,7 +183,9 @@ public static class RovingVisitCoordinator
         state.OfferedProductId = selected.Product.ID;
         state.OfferedQuantity = quantity;
         state.OfferedPayment = payment;
-        _dispatcher.SendSystemMessage($"{definition.DisplayName} offered ${payment:0} for {quantity} units of {selected.Product.Name}. Effect match bonus: {selected.Match * 100f:0}%.");
+        _dispatcher.SendSystemMessage(
+            $"{definition.DisplayName} offered ${payment:0} for {quantity} units of {selected.Product.Name}. " +
+            $"Effect match bonus: {selected.Match * 100f:0}%.");
         _dispatcher.SaveState();
         return true;
     }
@@ -196,7 +205,8 @@ public static class RovingVisitCoordinator
 
         state.DealCompleted = true;
         state.RemainingBudget = Math.Max(0f, state.RemainingBudget - state.OfferedPayment);
-        _dispatcher.SendSystemMessage($"Bulk sale complete. {CrewDefinitions.Get(crewId)?.DisplayName ?? "The crew"} has ${state.RemainingBudget:0} left in its visit budget.");
+        _dispatcher.SendSystemMessage(
+            $"Bulk sale complete. {CrewDefinitions.Get(crewId)?.DisplayName ?? "The crew"} has ${state.RemainingBudget:0} left in its visit budget.");
         _dispatcher.SaveState();
     }
 
@@ -234,9 +244,10 @@ public static class RovingVisitCoordinator
     {
         if (state.HasScheduledVisit)
         {
-            if (state.Active)
+            if (state.Active && _restoredVisitSequence != state.VisitSequence)
             {
                 RestoreActiveVisit(state);
+                _restoredVisitSequence = state.VisitSequence;
             }
             return;
         }
@@ -273,14 +284,16 @@ public static class RovingVisitCoordinator
         state.NoticeSent = true;
         var effects = string.Join(", ", state.PreferredEffectIds.Select(CrewDefinitions.GetEffectName));
         var days = Math.Max(0, state.ArrivalDay - SpecialCustomerRuntime.ElapsedDays);
-        _dispatcher.SendSystemMessage($"Travel notice: {definition.DisplayName} arrives in about {days} day(s). They only buy {definition.AcceptedDrugLabel}. Requested bonus effects: {effects}.");
+        _dispatcher.SendSystemMessage(
+            $"Travel notice: {definition.DisplayName} arrives in about {days} day(s). " +
+            $"They only buy {definition.AcceptedDrugLabel}. Requested bonus effects: {effects}.");
         _dispatcher.SaveState();
     }
 
     private static void StartVisit(RovingVisitState state)
     {
         var definition = CrewDefinitions.Get(state.CrewId);
-        var leader = RovingCrewLeader.Get(state.CrewId);
+        var leader = RovingCrewLeader.Find(state.CrewId);
         if (definition is null || leader is null || _dispatcher is null)
         {
             MelonLogger.Error($"[RSC] Could not start visit for '{state.CrewId}'.");
@@ -290,6 +303,7 @@ public static class RovingVisitCoordinator
         }
 
         state.Active = true;
+        _restoredVisitSequence = state.VisitSequence;
         state.VisitBudget = definition.BaseBudget * SpecialCustomerRuntime.GetRankBudgetMultiplier() * state.BudgetMultiplier;
         state.VisitBudget = (float)Math.Round(state.VisitBudget / 50f) * 50f;
         state.RemainingBudget = state.VisitBudget;
@@ -298,7 +312,10 @@ public static class RovingVisitCoordinator
         SpecialCustomerRuntime.SpawnCrewVehicle(definition);
 
         var effects = string.Join(", ", state.PreferredEffectIds.Select(CrewDefinitions.GetEffectName));
-        _dispatcher.SendSystemMessage($"{definition.DisplayName} has arrived. Group budget: ${state.VisitBudget:0}. Accepted drugs: {definition.AcceptedDrugLabel}. Bonus effects: {effects}. Their exclusive item is {definition.ExclusiveItemName} (${definition.ExclusiveItemPrice:0}).");
+        _dispatcher.SendSystemMessage(
+            $"{definition.DisplayName} has arrived. Group budget: ${state.VisitBudget:0}. " +
+            $"Accepted drugs: {definition.AcceptedDrugLabel}. Bonus effects: {effects}. " +
+            $"Their exclusive item is {definition.ExclusiveItemName} (${definition.ExclusiveItemPrice:0}).");
         _dispatcher.SaveState();
         TryOfferActiveContract(notifyOnFailure: true);
     }
@@ -306,7 +323,7 @@ public static class RovingVisitCoordinator
     private static void RestoreActiveVisit(RovingVisitState state)
     {
         var definition = CrewDefinitions.Get(state.CrewId);
-        var leader = RovingCrewLeader.Get(state.CrewId);
+        var leader = RovingCrewLeader.Find(state.CrewId);
         if (definition is null || leader is null)
         {
             return;
@@ -314,6 +331,7 @@ public static class RovingVisitCoordinator
 
         RovingCrewMember.BeginCrewVisit(definition);
         SpecialCustomerRuntime.ApplyVisitEffects(leader, state.PreferredEffectIds);
+        SpecialCustomerRuntime.SpawnCrewVehicle(definition);
     }
 
     private static void EndVisit(RovingVisitState state)
@@ -325,6 +343,7 @@ public static class RovingVisitCoordinator
         state.ResetCurrentVisit();
         _dispatcher?.SaveState();
         _lastOfferRetryHour = -1;
+        _restoredVisitSequence = -1;
     }
 
     private static string GetDrugTypeName(ProductDefinition product)
@@ -347,7 +366,8 @@ public static class RovingVisitCoordinator
             return 0f;
         }
 
-        var matched = product.Properties.Count(property => preferredEffectIds.Contains(property.ID, StringComparer.OrdinalIgnoreCase));
+        var matched = product.Properties.Count(property =>
+            preferredEffectIds.Contains(property.ID, StringComparer.OrdinalIgnoreCase));
         return Math.Clamp((float)matched / preferredEffectIds.Count, 0f, 1f);
     }
 }
