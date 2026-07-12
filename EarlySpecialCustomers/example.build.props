@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <AutomateLocalDeployment>false</AutomateLocalDeployment>
+    <LocalMonoDeploymentPath>C:\Program Files (x86)\Steam\steamapps\common\Schedule I alternate</LocalMonoDeploymentPath>
+    <LocalIl2CppDeploymentPath>C:\Program Files (x86)\Steam\steamapps\common\Schedule I</LocalIl2CppDeploymentPath>
+    <MonoAssembliesPath>$(LocalMonoDeploymentPath)\Schedule I_Data\Managed</MonoAssembliesPath>
+    <Il2CppAssembliesPath>$(LocalIl2CppDeploymentPath)\MelonLoader\Il2CppAssemblies</Il2CppAssembliesPath>
+    <MelonLoaderAssembliesPath>$(LocalIl2CppDeploymentPath)\MelonLoader\net6</MelonLoaderAssembliesPath>
+  </PropertyGroup>
+</Project>

@@ -1,63 +1,69 @@
 using MelonLoader;
+using RovingSpecialCustomers.Items;
+using RovingSpecialCustomers.NPCs;
+using RovingSpecialCustomers.Services;
+using RovingSpecialCustomers.Utils;
 using S1API.Lifecycle;
-using EarlySpecialCustomers.Utils;
+using UnityEngine;
 
-[assembly: MelonInfo(typeof(EarlySpecialCustomers.Core), Constants.ModName, Constants.ModVersion, Constants.ModAuthor)]
+[assembly: MelonInfo(typeof(RovingSpecialCustomers.Core), Constants.ModName, Constants.ModVersion, Constants.ModAuthor)]
 [assembly: MelonGame(Constants.Game.Studio, Constants.Game.Name)]
 
-namespace EarlySpecialCustomers;
+namespace RovingSpecialCustomers;
 
 public sealed class Core : MelonMod
 {
-    private static MelonPreferences_Category? _preferencesCategory;
-    private static MelonPreferences_Entry<bool>? _introMessagesEntry;
-    private static MelonPreferences_Entry<bool>? _milestoneMessagesEntry;
-    private static MelonPreferences_Entry<bool>? _debugLogsEntry;
+    private static MelonPreferences_Entry<bool>? _debugLogs;
 
-    public static bool IntroMessagesEnabled => _introMessagesEntry?.Value ?? Constants.Defaults.IntroMessagesEnabled;
-    public static bool MilestoneMessagesEnabled => _milestoneMessagesEntry?.Value ?? Constants.Defaults.MilestoneMessagesEnabled;
-    public static bool DebugLogsEnabled => _debugLogsEntry?.Value ?? Constants.Defaults.DebugLogsEnabled;
+    public static bool GameLoaded { get; private set; }
+    public static bool DebugLogsEnabled => _debugLogs?.Value ?? false;
 
     public override void OnInitializeMelon()
     {
-        InitializePreferences();
-        GameLifecycle.OnPreLoad += OnPreLoad;
+        var category = MelonPreferences.CreateCategory(Constants.PreferencesCategory);
+        _debugLogs = category.CreateEntry("DebugLogs", false, "Enable debug logs");
+        category.SaveToFile(false);
+
+        GameLifecycle.OnPreLoad += HandlePreLoad;
+        GameLifecycle.OnLoadComplete += HandleLoadComplete;
+        GameLifecycle.OnPreSceneChange += HandlePreSceneChange;
         LoggerInstance.Msg($"{Constants.ModName} {Constants.ModVersion} initialized.");
+    }
+
+    public override void OnUpdate()
+    {
+        if (GameLoaded)
+        {
+            SpecialCustomerDispatcher.Instance?.Tick(Time.unscaledDeltaTime);
+        }
     }
 
     public override void OnApplicationQuit()
     {
-        GameLifecycle.OnPreLoad -= OnPreLoad;
+        GameLifecycle.OnPreLoad -= HandlePreLoad;
+        GameLifecycle.OnLoadComplete -= HandleLoadComplete;
+        GameLifecycle.OnPreSceneChange -= HandlePreSceneChange;
+        HandlePreSceneChange();
     }
 
-    private void OnPreLoad()
+    private static void HandlePreLoad()
     {
-        // S1API discovers concrete NPC subclasses during its NPC load flow.
-        // Do not manually instantiate custom NPCs.
+        ExclusiveItemRegistry.Initialize();
+    }
+
+    private static void HandleLoadComplete()
+    {
+        GameLoaded = true;
         if (DebugLogsEnabled)
         {
-            LoggerInstance.Msg("Preparing early special-customer NPC definitions.");
+            MelonLogger.Msg("[RSC] Game load complete; visit coordinator enabled.");
         }
     }
 
-    private static void InitializePreferences()
+    private static void HandlePreSceneChange()
     {
-        _preferencesCategory = MelonPreferences.CreateCategory(Constants.PreferencesCategory);
-        _introMessagesEntry = _preferencesCategory.CreateEntry(
-            "IntroMessages",
-            Constants.Defaults.IntroMessagesEnabled,
-            "Enable Intro Messages",
-            "Allow each special customer to introduce themselves once per save.");
-        _milestoneMessagesEntry = _preferencesCategory.CreateEntry(
-            "MilestoneMessages",
-            Constants.Defaults.MilestoneMessagesEnabled,
-            "Enable Milestone Messages",
-            "Allow occasional messages after completed deals.");
-        _debugLogsEntry = _preferencesCategory.CreateEntry(
-            "DebugLogs",
-            Constants.Defaults.DebugLogsEnabled,
-            "Enable Debug Logs",
-            "Show detailed Early Special Customers messages in the MelonLoader console.");
-        _preferencesCategory.SaveToFile(false);
+        GameLoaded = false;
+        RovingCrewMember.HideAll();
+        SpecialCustomerRuntime.DestroyCrewVehicle();
     }
 }

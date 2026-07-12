@@ -1,0 +1,81 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="local.build.props" Condition="Exists('local.build.props')" />
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+    <TargetFramework Condition="'$(Configuration)' == 'Mono'">netstandard2.1</TargetFramework>
+    <TargetFramework Condition="'$(Configuration)' == 'Il2cpp'">net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>RovingSpecialCustomers</RootNamespace>
+    <Configurations>Mono;Il2cpp</Configurations>
+    <Platforms>AnyCPU</Platforms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <AutomateLocalDeployment Condition="'$(AutomateLocalDeployment)' == ''">false</AutomateLocalDeployment>
+
+    <MonoAssembliesPath Condition="'$(MonoAssembliesPath)' == '' and '$(LocalMonoDeploymentPath)' != ''">$(LocalMonoDeploymentPath)\Schedule I_Data\Managed</MonoAssembliesPath>
+    <Il2CppAssembliesPath Condition="'$(Il2CppAssembliesPath)' == '' and '$(LocalIl2CppDeploymentPath)' != ''">$(LocalIl2CppDeploymentPath)\MelonLoader\Il2CppAssemblies</Il2CppAssembliesPath>
+    <MelonLoaderAssembliesPath Condition="'$(MelonLoaderAssembliesPath)' == '' and '$(LocalIl2CppDeploymentPath)' != ''">$(LocalIl2CppDeploymentPath)\MelonLoader\net6</MelonLoaderAssembliesPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Mono'">
+    <DefineConstants>$(DefineConstants);MONO</DefineConstants>
+    <AssemblyName>RovingSpecialCustomers_Mono</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Il2cpp'">
+    <DefineConstants>$(DefineConstants);IL2CPP</DefineConstants>
+    <AssemblyName>RovingSpecialCustomers_Il2cpp</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="S1API.Forked" Version="3.0.5" />
+    <PackageReference Include="LavaGang.MelonLoader" Version="0.7.1" PrivateAssets="all" NoWarn="NU1701" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Mono' and '$(MonoAssembliesPath)' != ''">
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(MonoAssembliesPath)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(MonoAssembliesPath)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Il2cpp' and '$(Il2CppAssembliesPath)' != ''">
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(Il2CppAssembliesPath)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(Il2CppAssembliesPath)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppInterop.Runtime">
+      <HintPath>$(MelonLoaderAssembliesPath)\Il2CppInterop.Runtime.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="ValidateMonoPaths" BeforeTargets="ResolveReferences" Condition="'$(Configuration)' == 'Mono' and '$(MonoAssembliesPath)' == ''">
+    <Error Text="Set LocalMonoDeploymentPath or MonoAssembliesPath in local.build.props before building Mono." />
+  </Target>
+
+  <Target Name="ValidateIl2CppPaths" BeforeTargets="ResolveReferences" Condition="'$(Configuration)' == 'Il2cpp' and ('$(Il2CppAssembliesPath)' == '' or '$(MelonLoaderAssembliesPath)' == '')">
+    <Error Text="Set LocalIl2CppDeploymentPath, Il2CppAssembliesPath, and MelonLoaderAssembliesPath in local.build.props before building Il2cpp." />
+  </Target>
+
+  <Target Name="DeployMono" AfterTargets="Build" Condition="'$(AutomateLocalDeployment)' == 'true' and '$(Configuration)' == 'Mono' and '$(LocalMonoDeploymentPath)' != ''">
+    <MakeDir Directories="$(LocalMonoDeploymentPath)\Mods" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(LocalMonoDeploymentPath)\Mods" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="DeployIl2Cpp" AfterTargets="Build" Condition="'$(AutomateLocalDeployment)' == 'true' and '$(Configuration)' == 'Il2cpp' and '$(LocalIl2CppDeploymentPath)' != ''">
+    <MakeDir Directories="$(LocalIl2CppDeploymentPath)\Mods" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(LocalIl2CppDeploymentPath)\Mods" SkipUnchangedFiles="true" />
+  </Target>
+</Project>
