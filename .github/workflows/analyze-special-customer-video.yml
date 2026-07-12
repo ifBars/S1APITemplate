@@ -1,0 +1,90 @@
+name: Analyze Special Customer Video
+
+on:
+  push:
+    branches:
+      - agent/early-special-customers
+    paths:
+      - .github/workflows/analyze-special-customer-video.yml
+
+permissions:
+  contents: read
+
+env:
+  VIDEO_URL: https://www.youtube.com/watch?v=ppp6dn8LeN0
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install tools
+        run: |
+          python -m pip install --upgrade pip yt-dlp
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Capture metadata, captions, thumbnail, and frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/captions evidence/frames
+
+          yt-dlp -J --no-warnings --no-playlist "$VIDEO_URL" > evidence/metadata.json
+
+          yt-dlp \
+            --skip-download \
+            --write-subs \
+            --write-auto-subs \
+            --sub-langs 'en.*,en' \
+            --sub-format 'vtt/srt/best' \
+            --write-thumbnail \
+            --convert-thumbnails jpg \
+            --no-playlist \
+            -o 'evidence/%(id)s.%(ext)s' \
+            "$VIDEO_URL" || true
+
+          yt-dlp \
+            --no-playlist \
+            -f 'bestvideo[height<=480]+bestaudio/best[height<=480]/best' \
+            --merge-output-format mp4 \
+            -o 'evidence/video.%(ext)s' \
+            "$VIDEO_URL"
+
+          VIDEO_FILE="$(find evidence -maxdepth 1 -type f -name 'video.*' | head -n 1)"
+          ffmpeg -hide_banner -loglevel error -i "$VIDEO_FILE" -vf 'fps=1/10,scale=960:-2' -q:v 3 evidence/frames/frame_%05d.jpg
+          rm -f "$VIDEO_FILE"
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          metadata = json.loads(Path('evidence/metadata.json').read_text(encoding='utf-8'))
+          keep = {
+              key: metadata.get(key)
+              for key in (
+                  'id', 'title', 'description', 'uploader', 'channel', 'channel_url',
+                  'upload_date', 'timestamp', 'duration', 'view_count', 'like_count',
+                  'webpage_url', 'categories', 'tags', 'chapters'
+              )
+          }
+          Path('evidence/metadata-summary.json').write_text(
+              json.dumps(keep, indent=2, ensure_ascii=False), encoding='utf-8'
+          )
+          PY
+
+      - name: Upload evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: special-customer-video-evidence
+          path: evidence
+          retention-days: 1
+          if-no-files-found: error
