@@ -1,6 +1,11 @@
 name: Analyze Special Customer Video
 
 on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - .github/workflows/analyze-special-customer-video.yml
   push:
     branches:
       - agent/early-special-customers
