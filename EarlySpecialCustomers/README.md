@@ -35,6 +35,11 @@ dotnet build .\RovingSpecialCustomers.csproj -c Il2cpp
 - `Il2cpp` targets the default/beta branch with generated MelonLoader wrappers.
 - Players need MelonLoader and S1API.Forked at runtime.
 
+## Validation status
+
+- Mono build: passed against the current `ifBars/schedule-one-assemblies` repository.
+- IL2CPP build: passed against the current generated wrappers in `ifBars/il2cpp-scheduleone-assemblies`.
+
 ## Current limitations
 
 - This is an independently implemented prototype based on non-final preview information, not leaked developer source.
