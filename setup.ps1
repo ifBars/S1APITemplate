@@ -108,7 +108,8 @@ $content = @"
     <MelonLoaderAssembliesPath>`$(LocalIl2CppDeploymentPath)\MelonLoader\net6</MelonLoaderAssembliesPath>
 
     <UseLocalS1APIForked>false</UseLocalS1APIForked>
-    <LocalS1APIForkedPath>..\S1API\S1API\bin\CrossCompat\netstandard2.1\S1API.dll</LocalS1APIForkedPath>
+    <LocalS1APIRoot>..\S1API</LocalS1APIRoot>
+    <UseLocalMelonLoaderReferences>false</UseLocalMelonLoaderReferences>
   </PropertyGroup>
 </Project>
 "@

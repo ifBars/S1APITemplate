@@ -1,13 +1,20 @@
 # S1APITemplate
 
-A beginner-friendly Schedule I mod template for [S1API.Forked](https://www.nuget.org/packages/S1API.Forked), MelonLoader, and Harmony.
+A beginner-friendly Schedule I mod template for [S1API.Forked](https://www.nuget.org/packages/S1API.Forked), MelonLoader, and Harmony. The project currently pins S1API.Forked 3.1.4.
 
 The default path is `CrossCompat`: one mod assembly that stays on S1API/MelonLoader abstractions and avoids direct `ScheduleOne` or `Il2CppScheduleOne` game types. Use `Mono` or `Il2cpp` only when your mod intentionally needs runtime-specific game assemblies.
 
 ## Quick Start
 
-1. Install the template or clone/copy this folder.
-2. Run the setup script once:
+1. Clone this repository, or install it as a local .NET template and create a project:
+
+```powershell
+dotnet new install .
+dotnet new s1api -n MyScheduleOneMod
+Set-Location .\MyScheduleOneMod
+```
+
+2. Run the setup script once from the generated project:
 
 ```powershell
 .\setup.ps1
@@ -55,6 +62,22 @@ dotnet build .\S1APITemplate.sln -c Il2cpp
 
 Players still need MelonLoader and S1API installed in the game at runtime.
 
+## Developing Against a Local S1API Checkout
+
+The default package reference is recommended for released mods. To compile against a sibling S1API checkout, build the matching S1API target and enable the local reference in `local.build.props`:
+
+```powershell
+dotnet build ..\S1API\S1API.sln -c MonoMelon -p:AutomateLocalDeployment=false
+dotnet build ..\S1API\S1API.sln -c Il2CppMelon -p:AutomateLocalDeployment=false
+```
+
+```xml
+<UseLocalS1APIForked>true</UseLocalS1APIForked>
+<LocalS1APIRoot>..\S1API</LocalS1APIRoot>
+```
+
+`CrossCompat` and `Mono` consume the local `MonoMelon` build; `Il2cpp` consumes the local `Il2CppMelon` build. Override `LocalS1APIForkedPath` only for a non-standard output layout.
+
 ## Included References
 
 The project includes the common references that S1API mods usually need so new modders do not have to add Unity assemblies manually:
@@ -96,7 +119,8 @@ They are development guidance only. They are not compiled into the mod DLL and s
 
 ## Where To Put Code
 
-- Register S1API items, NPCs, quests, saveables, and shop data from `GameLifecycle.OnPreLoad`.
+- Use `GameLifecycle.OnPreLoad` for stable content definitions that save deserialization must resolve.
+- Use `GameLifecycle.OnLoadComplete` for systems that need the loaded world, managers, or player state.
 - Put Harmony patch classes under `Integrations/`.
 - Put IDs, version strings, config names, and log tags in `Utils/Constants.cs`.
 - Keep CrossCompat code on S1API wrappers and public abstractions. If a file needs direct game types, guard it with `#if MONO` / `#if IL2CPP` or keep it out of `CrossCompat`.

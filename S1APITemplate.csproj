@@ -16,6 +16,14 @@
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     <AutomateLocalDeployment Condition="'$(AutomateLocalDeployment)' == ''">false</AutomateLocalDeployment>
     <UseLocalS1APIForked Condition="'$(UseLocalS1APIForked)' == ''">false</UseLocalS1APIForked>
+    <UseLocalMelonLoaderReferences Condition="'$(UseLocalMelonLoaderReferences)' == ''">false</UseLocalMelonLoaderReferences>
+
+    <LocalS1APIRoot Condition="'$(LocalS1APIRoot)' == ''">..\S1API</LocalS1APIRoot>
+    <LocalS1APIBuildConfiguration Condition="'$(LocalS1APIBuildConfiguration)' == '' and '$(Configuration)' == 'Il2cpp'">Il2CppMelon</LocalS1APIBuildConfiguration>
+    <LocalS1APIBuildConfiguration Condition="'$(LocalS1APIBuildConfiguration)' == ''">MonoMelon</LocalS1APIBuildConfiguration>
+    <LocalS1APITargetFramework Condition="'$(LocalS1APITargetFramework)' == '' and '$(Configuration)' == 'Il2cpp'">net6.0</LocalS1APITargetFramework>
+    <LocalS1APITargetFramework Condition="'$(LocalS1APITargetFramework)' == ''">netstandard2.1</LocalS1APITargetFramework>
+    <LocalS1APIForkedPath Condition="'$(LocalS1APIForkedPath)' == ''">$(LocalS1APIRoot)\S1API\bin\$(LocalS1APIBuildConfiguration)\$(LocalS1APITargetFramework)\S1API.dll</LocalS1APIForkedPath>
 
     <MonoAssembliesPath Condition="'$(MonoAssembliesPath)' == '' and '$(LocalMonoDeploymentPath)' != ''">$(LocalMonoDeploymentPath)\Schedule I_Data\Managed</MonoAssembliesPath>
     <Il2CppAssembliesPath Condition="'$(Il2CppAssembliesPath)' == '' and '$(LocalIl2CppDeploymentPath)' != ''">$(LocalIl2CppDeploymentPath)\MelonLoader\Il2CppAssemblies</Il2CppAssembliesPath>
@@ -39,7 +47,10 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(UseLocalS1APIForked)' != 'true'">
-    <PackageReference Include="S1API.Forked" Version="3.0.5" />
+    <PackageReference Include="S1API.Forked" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalMelonLoaderReferences)' != 'true'">
     <PackageReference Include="LavaGang.MelonLoader" Version="0.7.1" PrivateAssets="all" NoWarn="NU1701" />
     <PackageReference Include="HarmonyX" Version="2.15.0" PrivateAssets="all" />
   </ItemGroup>
@@ -197,11 +208,12 @@
     </Reference>
   </ItemGroup>
 
-  <Target Name="ValidateLocalS1APIPath" BeforeTargets="ResolveReferences" Condition="'$(UseLocalS1APIForked)' == 'true' and '$(LocalS1APIForkedPath)' == ''">
-    <Error Text="UseLocalS1APIForked is true, but LocalS1APIForkedPath is empty. Set it in local.build.props or turn UseLocalS1APIForked off." />
+  <Target Name="ValidateLocalS1APIPath" BeforeTargets="ResolveReferences" Condition="'$(UseLocalS1APIForked)' == 'true'">
+    <Error Condition="'$(LocalS1APIForkedPath)' == ''" Text="UseLocalS1APIForked is true, but LocalS1APIForkedPath is empty. Set it in local.build.props or turn UseLocalS1APIForked off." />
+    <Error Condition="'$(LocalS1APIForkedPath)' != '' and !Exists('$(LocalS1APIForkedPath)')" Text="Local S1API was not found at '$(LocalS1APIForkedPath)'. Build S1API with configuration '$(LocalS1APIBuildConfiguration)', set LocalS1APIRoot/LocalS1APIForkedPath, or turn UseLocalS1APIForked off." />
   </Target>
 
-  <Target Name="ValidateMonoPaths" BeforeTargets="ResolveReferences" Condition="'$(Configuration)' == 'Mono' and '$(MonoAssembliesPath)' == ''">
+  <Target Name="ValidateMonoPaths" BeforeTargets="ResolveReferences" Condition="('$(Configuration)' == 'Mono' or ('$(Configuration)' == 'CrossCompat' and '$(UseLocalMelonLoaderReferences)' == 'true')) and '$(MonoAssembliesPath)' == ''">
     <Error Text="Set LocalMonoDeploymentPath in local.build.props, or run .\setup.ps1, before building Mono." />
   </Target>
 

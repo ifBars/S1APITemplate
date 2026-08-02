@@ -23,6 +23,7 @@ namespace S1APITemplate
             InitializePreferences();
             HarmonyPatches.Initialize(this);
             GameLifecycle.OnPreLoad += OnPreLoad;
+            GameLifecycle.OnLoadComplete += OnLoadComplete;
 
             LoggerInstance.Msg($"{Constants.ModName} initialized.");
         }
@@ -30,12 +31,18 @@ namespace S1APITemplate
         public override void OnApplicationQuit()
         {
             GameLifecycle.OnPreLoad -= OnPreLoad;
+            GameLifecycle.OnLoadComplete -= OnLoadComplete;
             Instance = null;
         }
 
         private void OnPreLoad()
         {
-            LoggerInstance.Msg("Game is preparing to load. Register S1API items, NPCs, quests, or saveables here.");
+            LoggerInstance.Msg("Game is preparing to load. Register stable S1API content needed by save data here.");
+        }
+
+        private void OnLoadComplete()
+        {
+            LoggerInstance.Msg("Save loading is complete. Initialize systems that depend on the loaded world here.");
         }
 
         private static void InitializePreferences()

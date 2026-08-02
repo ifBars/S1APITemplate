@@ -18,6 +18,9 @@
 
     <!-- Use this only when developing against a local S1API build instead of the NuGet package. -->
     <UseLocalS1APIForked>false</UseLocalS1APIForked>
-    <LocalS1APIForkedPath>..\S1API\S1API\bin\CrossCompat\netstandard2.1\S1API.dll</LocalS1APIForkedPath>
+    <LocalS1APIRoot>..\S1API</LocalS1APIRoot>
+
+    <!-- Set to true only when compiling against MelonLoader assemblies from the local game install. -->
+    <UseLocalMelonLoaderReferences>false</UseLocalMelonLoaderReferences>
   </PropertyGroup>
 </Project>

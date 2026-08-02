@@ -19,7 +19,7 @@ Work from evidence and keep the mod shape small. This skill is public-safe: neve
    - Vanilla mod: direct game patches when helper APIs are too limiting.
 2. Confirm runtime: Mono, IL2CPP, CrossCompat, client, server, or mixed. For user reports, map Steam branches first: `none`/`beta` usually IL2CPP; `alternate`/`alternate-beta` usually Mono.
 3. Check requirements when the user only has an agent or a fresh machine: .NET SDK, `ilspycmd`, game path/logs, optional editor, optional AssetRipper/Unity. State that Visual Studio/Rider are optional for agent-driven work.
-4. If the answer depends on game code, prefab hierarchy, generated wrappers, logs, or runtime state, inspect local evidence before designing the change.
+4. If the answer depends on game code, prefab hierarchy, generated wrappers, logs, or runtime state, inspect local evidence before designing the change. For base-game feature parity, inspect both the controlling C# and the serialized prefab/scene object graph; either source alone may omit the system's configured behavior.
 5. Choose the lightest abstraction that fits: S1API, MAPI, SteamNetworkLib, DedicatedServerMod patterns, or direct Harmony.
 6. Name the owning lifecycle hook, patch point, save/load path, network handler, or asset path before editing.
 
@@ -28,7 +28,7 @@ Work from evidence and keep the mod shape small. This skill is public-safe: neve
 - `references/local-game-introspection.md`: requirements, user paths, logs, generated assemblies, `ilspycmd`, safe evidence capture, and probe script.
 - `references/community-wiki.md`: local wiki routing, Steam branch naming, logs, saves, setup, publishing, and community tools.
 - `references/decompilation-workflow.md`: focused `ilspycmd` inspection and Mono/IL2CPP comparison.
-- `references/assetripper-workflow.md`: AssetRipper, prefab/resource inspection, Unity project export, script limitations.
+- `references/assetripper-workflow.md`: AssetRipper, serialized-system reconstruction, prefab/scene/resource inspection, Unity project export, material and cutscene investigation, script limitations.
 - `references/build-config.md`: csproj setup, target frameworks, references, local build properties.
 - `references/il2cpp-modding.md`: imports, casts, delegates, injected types, collections, Harmony limits.
 - `references/s1api-reference.md`: S1API wrappers, builders, lifecycle hooks, saveables.
@@ -60,6 +60,7 @@ Only read the references needed for the current task.
 ## High-Risk Checks
 
 - Do not infer IL2CPP behavior from Mono source alone; inspect generated wrappers or logs.
+- Do not infer a complete Unity system from C# alone. Prefab composition, scene overrides, object references, animation assets, materials, and configured timings may define behavior that is absent from decompiled methods.
 - Do not use IL transpilers for IL2CPP builds; prefer prefix/postfix or manually resolved method patches.
 - Do not treat a Mono pass as proof of IL2CPP compatibility, or an IL2CPP pass as proof of Mono compatibility; plan separate validation for each runtime.
 - For IL2CPP injected components, keep internal selection/configuration objects out of generated Il2Cpp surfaces. If a `MonoBehaviour` or injected type has members that return or accept custom managed helper types, mark those members with `HideFromIl2Cpp` when they are only called from managed mod/API code.

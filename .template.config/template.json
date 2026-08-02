@@ -15,17 +15,6 @@
   },
   "sourceName": "S1APITemplate",
   "preferNameDirectory": true,
-  "symbols": {
-    "safeprojectname": {
-      "type": "generated",
-      "generator": "safe_name",
-      "parameters": {
-        "source": "name"
-      },
-      "replaces": "$safeprojectname$",
-      "description": "Root namespace and assembly name."
-    }
-  },
   "sources": [
     {
       "exclude": [
