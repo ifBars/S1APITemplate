@@ -98,8 +98,6 @@ S1APITemplate/
 |       |-- schedule-one-modding/
 |       `-- schedule-one-custom-npcs/
 |-- Core.cs
-|-- Integrations/
-|   `-- HarmonyPatches.cs
 |-- Utils/
 |   `-- Constants.cs
 |-- example.build.props
@@ -121,7 +119,6 @@ They are development guidance only. They are not compiled into the mod DLL and s
 
 - Use `GameLifecycle.OnPreLoad` for stable content definitions that save deserialization must resolve.
 - Use `GameLifecycle.OnLoadComplete` for systems that need the loaded world, managers, or player state.
-- Put Harmony patch classes under `Integrations/`.
 - Put IDs, version strings, config names, and log tags in `Utils/Constants.cs`.
 - Keep CrossCompat code on S1API wrappers and public abstractions. If a file needs direct game types, guard it with `#if MONO` / `#if IL2CPP` or keep it out of `CrossCompat`.
 

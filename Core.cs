@@ -1,6 +1,5 @@
 using MelonLoader;
 using S1API.Lifecycle;
-using S1APITemplate.Integrations;
 using S1APITemplate.Utils;
 
 [assembly: MelonInfo(typeof(S1APITemplate.Core), Constants.ModName, Constants.ModVersion, Constants.ModAuthor)]
@@ -21,7 +20,6 @@ namespace S1APITemplate
         {
             Instance = this;
             InitializePreferences();
-            HarmonyPatches.Initialize(this);
             GameLifecycle.OnPreLoad += OnPreLoad;
             GameLifecycle.OnLoadComplete += OnLoadComplete;
 
